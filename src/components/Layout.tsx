@@ -10,7 +10,6 @@ import {
   Search,
   Bell,
   Settings as SettingsIcon,
-  LogIn,
   Phone,
   Download as DownloadIcon
 } from 'lucide-react';
@@ -129,7 +128,7 @@ export function Layout({ children, onLogout }: LayoutProps) {
         </nav>
 
         <div className="p-4 border-t border-emerald-800">
-          {user ? (
+          {user && (
             <>
               <div className={`bg-emerald-950 p-4 rounded-lg flex items-center gap-3 overflow-hidden ${!isSidebarOpen && 'justify-center p-2'}`}>
                 <div className="w-10 h-10 bg-slate-400 rounded-lg shrink-0 flex items-center justify-center text-white font-bold">
@@ -150,14 +149,6 @@ export function Layout({ children, onLogout }: LayoutProps) {
                 {isSidebarOpen && <span className="text-sm font-medium">Keluar</span>}
               </button>
             </>
-          ) : (
-            <button
-              onClick={() => navigate('/admin')}
-              className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-emerald-100/60 hover:bg-emerald-800/50 hover:text-white transition-all duration-200"
-            >
-              <LogIn className="w-5 h-5 flex-shrink-0" />
-              {isSidebarOpen && <span className="text-sm font-medium">Admin Login</span>}
-            </button>
           )}
         </div>
       </motion.aside>
@@ -187,12 +178,6 @@ export function Layout({ children, onLogout }: LayoutProps) {
           <div className="flex items-center gap-4">
             <button className="p-2 text-slate-400 hover:text-emerald-600 transition-colors">
               <Bell className="w-5 h-5" />
-            </button>
-            <button 
-              onClick={() => navigate('/admin')}
-              className="p-2 text-slate-400 hover:text-emerald-600 transition-colors"
-            >
-              <SettingsIcon className="w-5 h-5" />
             </button>
           </div>
         </header>
