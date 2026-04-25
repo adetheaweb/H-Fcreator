@@ -1,0 +1,135 @@
+{
+  "entities": {
+    "Article": {
+      "title": "Article",
+      "description": "Blog or news article",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "content": { "type": "string" },
+        "author": { "type": "string" },
+        "category": { "type": "string" },
+        "status": { "type": "string", "enum": ["Draft", "Published"] },
+        "thumbnail": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "content", "status"]
+    },
+    "App": {
+      "title": "App",
+      "description": "Application record",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "version": { "type": "string" },
+        "platform": { "type": "string", "enum": ["Web", "Mobile", "Desktop"] },
+        "url": { "type": "string" },
+        "description": { "type": "string" },
+        "developerId": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "platform"]
+    },
+    "GalleryItem": {
+      "title": "Gallery Item",
+      "description": "Media item in gallery",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "imageUrl": { "type": "string" },
+        "type": { "type": "string", "enum": ["Event", "Educational", "Misc"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "imageUrl"]
+    },
+    "User": {
+      "title": "User",
+      "description": "System user",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "email": { "type": "string" },
+        "displayName": { "type": "string" },
+        "role": { "type": "string", "enum": ["Admin", "Operator"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["email", "role"]
+    },
+    "Contact": {
+      "title": "Contact",
+      "description": "Contact information/social media",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "platform": { "type": "string" },
+        "value": { "type": "string" },
+        "icon": { "type": "string" },
+        "order": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["platform", "value"]
+    },
+    "Download": {
+      "title": "Download",
+      "description": "Downloadable files/resources",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "fileUrl": { "type": "string" },
+        "fileSize": { "type": "string" },
+        "type": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "fileUrl"]
+    },
+    "SiteConfig": {
+      "title": "Site Configuration",
+      "description": "Global site settings like admin profile data",
+      "type": "object",
+      "properties": {
+        "adminPhotoUrl": { "type": "string" },
+        "adminName": { "type": "string" },
+        "adminStatus": { "type": "string" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      }
+    }
+  },
+  "firestore": {
+    "/articles/{articleId}": {
+      "schema": "Article",
+      "description": "Collection of articles"
+    },
+    "/my_apps/{appId}": {
+      "schema": "App",
+      "description": "Collection of user applications"
+    },
+    "/gallery/{itemId}": {
+      "schema": "GalleryItem",
+      "description": "Collection of gallery items"
+    },
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profiles"
+    },
+    "/contacts/{contactId}": {
+      "schema": "Contact",
+      "description": "Contact methods"
+    },
+    "/config/{configId}": {
+      "schema": "SiteConfig",
+      "description": "Global site settings"
+    },
+    "/downloads/{downloadId}": {
+      "schema": "Download",
+      "description": "Downloadable files"
+    }
+  }
+}
