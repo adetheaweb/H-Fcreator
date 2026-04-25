@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { onAuthStateChanged, User } from 'firebase/auth';
+import { onAuthStateChanged, User, getRedirectResult } from 'firebase/auth';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { auth, db, loginWithGoogle, logout } from './lib/firebase';
 import { UserProfile } from './types';
@@ -34,6 +34,9 @@ export default function App() {
   const location = useLocation();
 
   useEffect(() => {
+    // Handle redirect result automatically if user was redirected
+    getRedirectResult(auth).catch((error) => console.error("Redirect login error:", error));
+
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setUser(user);
       if (user) {

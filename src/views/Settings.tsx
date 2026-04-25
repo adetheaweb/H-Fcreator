@@ -10,7 +10,8 @@ import {
   CheckCircle2,
   AlertCircle,
   Phone,
-  Download
+  Download,
+  Loader2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
@@ -342,10 +343,20 @@ export function Settings() {
               <div className="pt-4 flex items-center gap-4">
                 <button 
                   type="submit"
-                  className="bg-indigo-600 text-white px-10 py-3.5 rounded-2xl font-bold hover:bg-indigo-700 active:scale-95 transition-all shadow-xl shadow-indigo-600/25 flex items-center gap-2"
+                  disabled={loading}
+                  className="bg-indigo-600 text-white px-10 py-3.5 rounded-2xl font-bold hover:bg-indigo-700 active:scale-95 transition-all shadow-xl shadow-indigo-600/25 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed group"
                 >
-                  Perbarui Profil Admin
-                  <CheckCircle2 className="w-4 h-4" />
+                  {loading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Menyimpan...
+                    </>
+                  ) : (
+                    <>
+                      Perbarui Profil Admin
+                      <CheckCircle2 className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                    </>
+                  )}
                 </button>
               </div>
             </form>
