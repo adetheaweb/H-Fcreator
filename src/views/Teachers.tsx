@@ -3,25 +3,34 @@ import {
   Search, 
   Image as ImageIcon,
   Calendar,
-  Grid
+  Grid,
+  Video
 } from 'lucide-react';
-import { collection, getDocs, query, orderBy } from 'firebase/firestore';
+import { collection, getDocs, query, orderBy, doc, getDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
-import { GalleryItem } from '../types';
+import { GalleryItem, SiteConfig } from '../types';
 import { motion } from 'motion/react';
 
 export function Teachers() {
   const [items, setItems] = useState<GalleryItem[]>([]);
+  const [siteConfig, setSiteConfig] = useState<SiteConfig | null>(null);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
 
   useEffect(() => {
-    fetchItems();
+    fetchData();
   }, []);
 
-  async function fetchItems() {
+  async function fetchData() {
     setLoading(true);
     try {
+      // Fetch site config
+      const docSnap = await getDoc(doc(db, 'config', 'site'));
+      if (docSnap.exists()) {
+        setSiteConfig(docSnap.data() as SiteConfig);
+      }
+
+      // Fetch gallery
       const q = query(collection(db, 'gallery'), orderBy('createdAt', 'desc'));
       const snap = await getDocs(q);
       const data = snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as GalleryItem));
@@ -47,6 +56,26 @@ export function Teachers() {
       </div>
 
       <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden min-h-[500px] flex flex-col">
+        {siteConfig?.youtubeVideoId && !search && (
+          <div className="p-6 border-b border-slate-100 bg-slate-50/30">
+            <div className="flex items-center gap-3 mb-4">
+               <div className="p-2 bg-red-50 rounded-lg text-red-600">
+                  <Video className="w-4 h-4" />
+               </div>
+               <h3 className="font-bold text-slate-800 text-sm tracking-tight uppercase">Video Utama Portal</h3>
+            </div>
+            <div className="aspect-video w-full max-w-4xl mx-auto rounded-2xl overflow-hidden shadow-xl border-4 border-white">
+              <iframe
+                className="w-full h-full"
+                src={`https://www.youtube.com/embed/${siteConfig.youtubeVideoId}`}
+                title="H&F Gallery Video"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              ></iframe>
+            </div>
+          </div>
+        )}
         <div className="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
           <div className="flex items-center gap-2">
             <Grid className="w-4 h-4 text-indigo-600" />

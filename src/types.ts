@@ -52,6 +52,7 @@ export interface SiteConfig {
   adminPhotoUrl: string;
   adminName: string;
   adminStatus: string;
+  youtubeVideoId: string;
   updatedAt?: any;
 }
 

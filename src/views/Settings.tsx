@@ -50,7 +50,8 @@ export function Settings() {
   const [siteConfig, setSiteConfig] = useState<SiteConfig>({
     adminPhotoUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&h=200&auto=format&fit=crop',
     adminName: 'H&F Manager',
-    adminStatus: 'Active'
+    adminStatus: 'Active',
+    youtubeVideoId: 'H3v_A94f1r8'
   });
 
   // Form States
@@ -381,6 +382,17 @@ export function Settings() {
                     onChange={(e) => setSiteConfig({...siteConfig, adminPhotoUrl: e.target.value})}
                     className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none text-sm transition-all font-medium" 
                   />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">YouTube Video ID (untuk Gallery)</label>
+                  <input 
+                    type="text" 
+                    placeholder="Contoh: H3v_A94f1r8"
+                    value={siteConfig.youtubeVideoId} 
+                    onChange={(e) => setSiteConfig({...siteConfig, youtubeVideoId: e.target.value})}
+                    className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none text-sm transition-all font-medium" 
+                  />
+                  <p className="text-[9px] text-slate-400 mt-1 font-medium">Video ini akan ditampilkan di bagian atas Gallery Media.</p>
                 </div>
               </div>
 
