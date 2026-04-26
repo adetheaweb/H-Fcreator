@@ -51,7 +51,9 @@ export function Settings() {
     adminPhotoUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&h=200&auto=format&fit=crop',
     adminName: 'H&F Manager',
     adminStatus: 'Active',
-    youtubeVideoId: 'H3v_A94f1r8'
+    youtubeVideoId: 'H3v_A94f1r8',
+    primaryColor: '#064e3b',
+    accentColor: '#10b981'
   });
 
   // Form States
@@ -176,7 +178,8 @@ export function Settings() {
       } else if (activeTab === 'gallery') {
         if (editingId) {
           await setDoc(doc(db, 'gallery', editingId), {
-            ...galleryForm
+            ...galleryForm,
+            updatedAt: serverTimestamp()
           }, { merge: true });
         } else {
           await addDoc(collection(db, 'gallery'), {
@@ -184,7 +187,7 @@ export function Settings() {
             createdAt: serverTimestamp()
           });
         }
-        setGalleryForm({ title: '', imageUrl: '', type: 'Educational' });
+        setGalleryForm({ title: '', imageUrl: '', videoUrl: '', mediaType: 'image', type: 'Educational' });
         setSuccessMessage('Media berhasil disimpan!');
       } else if (activeTab === 'contacts') {
         if (editingId) {
@@ -400,7 +403,42 @@ export function Settings() {
                     onChange={(e) => setSiteConfig({...siteConfig, youtubeVideoId: e.target.value})}
                     className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none text-sm transition-all font-medium" 
                   />
-                  <p className="text-[9px] text-slate-400 mt-1 font-medium">Video ini akan ditampilkan di bagian atas Gallery Media.</p>
+                  <p className="text-[9px] text-slate-400 mt-1 font-medium text-center sm:text-left">Video ini akan ditampilkan di bagian atas Gallery Media.</p>
+                </div>
+                
+                <div className="md:col-span-1">
+                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Warna Utama (Sidebar)</label>
+                  <div className="flex gap-3">
+                    <input 
+                      type="color" 
+                      value={siteConfig.primaryColor || '#064e3b'} 
+                      onChange={(e) => setSiteConfig({...siteConfig, primaryColor: e.target.value})}
+                      className="w-12 h-12 rounded-lg cursor-pointer border-none bg-transparent overflow-hidden" 
+                    />
+                    <input 
+                      type="text" 
+                      value={siteConfig.primaryColor || '#064e3b'} 
+                      onChange={(e) => setSiteConfig({...siteConfig, primaryColor: e.target.value})}
+                      className="flex-1 px-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none text-sm transition-all font-mono" 
+                    />
+                  </div>
+                </div>
+                <div className="md:col-span-1">
+                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Warna Aksen</label>
+                  <div className="flex gap-3">
+                    <input 
+                      type="color" 
+                      value={siteConfig.accentColor || '#10b981'} 
+                      onChange={(e) => setSiteConfig({...siteConfig, accentColor: e.target.value})}
+                      className="w-12 h-12 rounded-lg cursor-pointer border-none bg-transparent overflow-hidden" 
+                    />
+                    <input 
+                      type="text" 
+                      value={siteConfig.accentColor || '#10b981'} 
+                      onChange={(e) => setSiteConfig({...siteConfig, accentColor: e.target.value})}
+                      className="flex-1 px-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none text-sm transition-all font-mono" 
+                    />
+                  </div>
                 </div>
               </div>
 

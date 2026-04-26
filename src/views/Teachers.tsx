@@ -95,42 +95,68 @@ export function Teachers() {
 
         <div className="p-6 flex-1">
           {loading ? (
-             <div className="flex items-center justify-center h-64 text-slate-400 font-bold uppercase tracking-widest text-xs">Memindai Database Gallery...</div>
+             <div className="flex items-center justify-center h-64 text-slate-400 font-bold uppercase tracking-widest text-[10px]">Memindai Database Gallery...</div>
           ) : filtered.length === 0 ? (
              <div className="flex flex-col items-center justify-center h-64 text-slate-400">
                <ImageIcon className="w-12 h-12 mb-4 opacity-20" />
-               <span className="font-bold uppercase tracking-widest text-xs opacity-50">Gallery Masih Kosong</span>
+               <span className="font-bold uppercase tracking-widest text-[10px] opacity-50">Gallery Masih Kosong</span>
              </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
-              {filtered.map((item) => (
-                <motion.div 
-                  key={item.id}
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="group relative bg-slate-50 rounded-2xl border border-slate-200 overflow-hidden hover:shadow-xl transition-all"
-                >
-                  <div className="aspect-square overflow-hidden bg-slate-200">
-                    <img 
-                      src={item.imageUrl} 
-                      alt={item.title} 
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1542831371-29b0f74f9713?auto=format&fit=crop&q=80&w=400';
-                      }}
-                    />
-                  </div>
-                  <div className="p-4">
-                    <div className="text-[10px] font-black text-indigo-600 uppercase tracking-widest mb-1">{item.type}</div>
-                    <h4 className="font-bold text-slate-800 text-sm truncate">{item.title}</h4>
-                    <div className="flex items-center gap-1.5 mt-2 text-[10px] text-slate-400 font-bold uppercase">
-                       <Calendar className="w-3 h-3" />
-                       {item.createdAt?.toDate ? item.createdAt.toDate().toLocaleDateString('id-ID') : 'Baru saja'}
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
+             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+               {filtered.map((item) => (
+                 <motion.div 
+                   key={item.id}
+                   initial={{ opacity: 0, scale: 0.95 }}
+                   animate={{ opacity: 1, scale: 1 }}
+                   className="group relative bg-white rounded-3xl border border-slate-200 overflow-hidden hover:shadow-2xl hover:shadow-indigo-500/10 transition-all duration-300"
+                 >
+                   <div className="aspect-[4/3] overflow-hidden bg-slate-100 relative">
+                     {item.mediaType === 'video' ? (
+                       <iframe
+                         className="w-full h-full"
+                         src={`https://www.youtube.com/embed/${item.videoUrl}`}
+                         title={item.title}
+                         frameBorder="0"
+                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                         allowFullScreen
+                       ></iframe>
+                     ) : (
+                       <img 
+                         src={item.imageUrl} 
+                         alt={item.title} 
+                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                         onError={(e) => {
+                           (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1542831371-29b0f74f9713?auto=format&fit=crop&q=80&w=600';
+                         }}
+                       />
+                     )}
+                     <div className="absolute top-4 left-4">
+                       <span className="px-3 py-1 bg-white/90 backdrop-blur-md rounded-full text-[9px] font-black uppercase tracking-widest shadow-sm" style={{ color: siteConfig?.accentColor || '#4f46e5' }}>
+                         {item.type}
+                       </span>
+                     </div>
+                   </div>
+                   <div className="p-5">
+                     <h4 className="font-bold text-slate-800 text-sm mb-3 group-hover:text-indigo-600 transition-colors line-clamp-1">{item.title}</h4>
+                     <div className="flex items-center justify-between">
+                       <div className="flex items-center gap-1.5 text-[10px] text-slate-400 font-bold uppercase">
+                          <Calendar className="w-3 h-3" />
+                          {item.createdAt?.toDate ? item.createdAt.toDate().toLocaleDateString('id-ID') : 'Baru saja'}
+                       </div>
+                       {item.mediaType === 'video' ? (
+                         <div className="p-1.5 bg-red-50 text-red-600 rounded-lg">
+                           <Video className="w-3.5 h-3.5" />
+                         </div>
+                       ) : (
+                         <div className="p-1.5 bg-indigo-50 text-indigo-600 rounded-lg">
+                           <ImageIcon className="w-3.5 h-3.5" />
+                         </div>
+                       )}
+                     </div>
+                   </div>
+                 </motion.div>
+               ))}
+             </div>
           )}
         </div>
       </div>

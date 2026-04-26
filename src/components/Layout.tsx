@@ -71,11 +71,12 @@ export function Layout({ children, onLogout }: LayoutProps) {
       <motion.aside 
         initial={false}
         animate={{ width: isSidebarOpen ? 260 : 80 }}
-        className="bg-emerald-900 flex flex-col shrink-0 sticky top-0 h-screen transition-all duration-300 ease-in-out z-20 shadow-xl"
+        style={{ backgroundColor: siteConfig.primaryColor || '#064e3b' }}
+        className="flex flex-col shrink-0 sticky top-0 h-screen transition-all duration-300 ease-in-out z-20 shadow-xl"
       >
         <div className="px-6 pb-6 flex flex-col gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-emerald-400 rounded-md flex items-center justify-center font-bold text-emerald-900 shrink-0">H</div>
+            <div className="w-8 h-8 rounded-md flex items-center justify-center font-bold shrink-0" style={{ backgroundColor: siteConfig.accentColor || '#34d399', color: siteConfig.primaryColor || '#064e3b' }}>H</div>
             {isSidebarOpen && (
               <motion.span 
                 initial={{ opacity: 0 }} 
@@ -96,17 +97,18 @@ export function Layout({ children, onLogout }: LayoutProps) {
               <div className="relative">
                 <img 
                   src={siteConfig.adminPhotoUrl} 
-                  className="w-16 h-16 rounded-full border-2 border-emerald-500/50 object-cover shadow-lg"
+                  className="w-16 h-16 rounded-full shadow-lg object-cover"
+                  style={{ border: `2px solid ${(siteConfig.accentColor || '#10b981')}80` }}
                   alt="Admin"
                   referrerPolicy="no-referrer"
                 />
-                <div className="absolute bottom-0 right-0 w-4 h-4 bg-emerald-500 border-2 border-emerald-900 rounded-full"></div>
+                <div className="absolute bottom-0 right-0 w-4 h-4 border-2 rounded-full" style={{ backgroundColor: siteConfig.accentColor || '#10b981', borderColor: siteConfig.primaryColor || '#064e3b' }}></div>
               </div>
               <div className="mt-3 text-center">
                 <p className="text-white font-bold text-xs">{siteConfig.adminName}</p>
                 <div className="flex items-center gap-1 justify-center mt-1">
-                  <div className="w-1 h-1 bg-emerald-400 rounded-full animate-pulse"></div>
-                  <p className="text-[10px] text-emerald-400 font-black tracking-widest uppercase">Status: {siteConfig.adminStatus}</p>
+                  <div className="w-1 h-1 rounded-full animate-pulse" style={{ backgroundColor: siteConfig.accentColor || '#10b981' }}></div>
+                  <p className="text-[10px] font-black tracking-widest uppercase" style={{ color: siteConfig.accentColor || '#10b981' }}>Status: {siteConfig.adminStatus}</p>
                 </div>
               </div>
             </motion.div>

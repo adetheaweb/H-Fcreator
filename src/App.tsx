@@ -30,12 +30,15 @@ export const useAuth = () => useContext(AuthContext);
 export default function App() {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [siteConfig, setSiteConfig] = useState<SiteConfig | null>(null);
   const [loading, setLoading] = useState(true);
   const location = useLocation();
 
   useEffect(() => {
-    // Handle redirect result automatically if user was redirected
-    getRedirectResult(auth).catch((error) => console.error("Redirect login error:", error));
+    // Fetch site config for theme colors early
+    getDoc(doc(db, 'config', 'site')).then(snap => {
+      if (snap.exists()) setSiteConfig(snap.data() as SiteConfig);
+    });
 
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setUser(user);
@@ -72,7 +75,7 @@ export default function App() {
     return (
       <div className="h-screen w-screen flex items-center justify-center bg-gray-50">
         <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: "linear" }}>
-          <Loader2 className="w-10 h-10 text-emerald-600" />
+          <Loader2 className="w-10 h-10" style={{ color: siteConfig?.primaryColor || '#059669' }} />
         </motion.div>
       </div>
     );

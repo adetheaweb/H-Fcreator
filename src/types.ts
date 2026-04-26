@@ -26,7 +26,9 @@ export interface App {
 export interface GalleryItem {
   id: string;
   title: string;
-  imageUrl: string;
+  imageUrl?: string;
+  videoUrl?: string;
+  mediaType?: 'image' | 'video';
   type: 'Event' | 'Educational' | 'Misc';
   createdAt: any;
 }
@@ -53,6 +55,8 @@ export interface SiteConfig {
   adminName: string;
   adminStatus: string;
   youtubeVideoId: string;
+  primaryColor?: string;
+  accentColor?: string;
   updatedAt?: any;
 }
 

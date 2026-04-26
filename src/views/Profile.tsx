@@ -82,8 +82,8 @@ export function Profile() {
     <div className="space-y-8">
       {/* Admin Profile Header */}
       <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
-        <div className="h-32 bg-emerald-700 relative">
-          <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
+        <div className="h-40 relative" style={{ backgroundColor: siteConfig?.primaryColor || '#047857' }}>
+          <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
           <div className="absolute -bottom-16 left-8">
             <div className="relative">
               <img 
@@ -92,17 +92,21 @@ export function Profile() {
                 alt="Admin"
                 referrerPolicy="no-referrer"
               />
-              <div className="absolute bottom-2 right-2 w-6 h-6 bg-emerald-500 border-4 border-white rounded-full"></div>
+              <div className="absolute bottom-2 right-2 w-6 h-6 border-4 border-white rounded-full" style={{ backgroundColor: siteConfig?.accentColor || '#10b981' }}></div>
             </div>
           </div>
         </div>
         <div className="pt-20 pb-8 px-8 ml-0 sm:ml-40 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
           <div>
             <h2 className="text-3xl font-black text-slate-900 tracking-tight">{siteConfig?.adminName || 'H&F Creator Admin'}</h2>
-            <p className="text-emerald-600 font-bold uppercase tracking-[0.2em] text-[10px] mt-1">{siteConfig?.adminStatus || 'PROFIL TERVERIFIKASI'}</p>
+            <p className="font-bold uppercase tracking-[0.2em] text-[10px] mt-1" style={{ color: siteConfig?.accentColor || '#10b981' }}>{siteConfig?.adminStatus || 'PROFIL TERVERIFIKASI'}</p>
           </div>
           <div className="flex gap-2">
-             <button onClick={() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })} className="px-6 py-2.5 bg-emerald-600 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-200">
+             <button 
+              onClick={() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })} 
+              className="px-6 py-2.5 text-white rounded-xl text-xs font-black uppercase tracking-widest transition-all shadow-lg shadow-indigo-200 active:scale-95"
+              style={{ backgroundColor: siteConfig?.accentColor || '#10b981' }}
+             >
                Hubungi Saya
              </button>
           </div>
@@ -114,7 +118,7 @@ export function Profile() {
         <div className="lg:col-span-1 space-y-8">
           <div className="bg-white rounded-2xl border border-slate-200 p-8 shadow-sm">
             <h3 className="font-black text-slate-800 text-sm uppercase tracking-widest mb-6 flex items-center gap-2">
-              <span className="w-1.5 h-6 bg-emerald-500 rounded-full"></span>
+              <span className="w-1.5 h-6 rounded-full" style={{ backgroundColor: siteConfig?.accentColor || '#10b981' }}></span>
               Tentang Creator
             </h3>
             <p className="text-sm text-slate-500 leading-relaxed font-medium">
@@ -157,7 +161,7 @@ export function Profile() {
                     >
                       <div className="flex items-center justify-between gap-4">
                         <div className="flex items-center gap-4">
-                          <div className="w-10 h-10 bg-white rounded-xl shadow-sm border border-slate-100 flex items-center justify-center text-emerald-600 group-hover:scale-110 transition-transform">
+                          <div className="w-10 h-10 bg-white rounded-xl shadow-sm border border-slate-100 flex items-center justify-center group-hover:scale-110 transition-transform" style={{ color: siteConfig?.accentColor || '#10b981' }}>
                             {getContactIcon(item.platform)}
                           </div>
                           <div>
