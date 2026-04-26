@@ -1,13 +1,68 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    // 0. Global Safety Net
     match /{document=**} {
       allow read, write: if false;
     }
 
-    function isSignedIn() { return request.auth != null; }
-    function isAdmin() { return isSignedIn() && exists(/databases/$(database)/documents/admins/$(request.auth.uid)); }
-    
+    // --- Helpers ---
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isEmailVerified() {
+      return request.auth.token.email_verified == true;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == 'ayobelajar4y0@gmail.com' ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // --- Validation Helpers ---
+    function isValidArticle(data) {
+      return data.keys().hasAll(['title', 'content', 'status', 'createdAt', 'updatedAt']) &&
+             data.title is string && data.title.size() <= 200 &&
+             data.content is string && data.content.size() <= 10000 &&
+             data.status in ['Draft', 'Published'] &&
+             data.createdAt == request.time &&
+             data.updatedAt == request.time;
+    }
+
+    function isValidApp(data) {
+      return data.keys().hasAll(['name', 'platform', 'version', 'createdAt', 'updatedAt']) &&
+             data.name is string && data.name.size() <= 100 &&
+             data.platform in ['Web', 'Mobile', 'Desktop'] &&
+             data.version is string &&
+             data.createdAt == request.time &&
+             data.updatedAt == request.time;
+    }
+
+    function isValidSiteConfig(data) {
+      return data.keys().hasAll(['adminName', 'adminStatus', 'adminPhotoUrl', 'updatedAt']) &&
+             data.adminName is string && data.adminName.size() <= 100 &&
+             data.adminStatus is string && data.adminStatus.size() <= 100 &&
+             data.adminPhotoUrl is string && data.adminPhotoUrl.size() <= 1000 &&
+             data.updatedAt == request.time;
+    }
+
+    // --- Rules ---
+
     match /admins/{adminId} {
       allow read: if isSignedIn();
       allow write: if false;
@@ -16,38 +71,42 @@ service cloud.firestore {
     match /users/{userId} {
       allow get: if isSignedIn() && (request.auth.uid == userId || isAdmin());
       allow list: if isAdmin();
-      allow create: if isSignedIn() && request.auth.uid == userId;
-      allow update: if isSignedIn() && request.auth.uid == userId;
+      allow create, update: if isSignedIn() && request.auth.uid == userId;
     }
 
     match /articles/{articleId} {
       allow read: if true;
-      allow write: if isSignedIn();
+      allow create: if isAdmin() && isValidArticle(incoming());
+      allow update: if isAdmin() && isValidArticle(incoming());
+      allow delete: if isAdmin();
     }
 
     match /my_apps/{appId} {
       allow read: if true;
-      allow write: if isSignedIn();
+      allow create: if isAdmin() && isValidApp(incoming());
+      allow update: if isAdmin() && isValidApp(incoming());
+      allow delete: if isAdmin();
     }
 
     match /gallery/{itemId} {
       allow read: if true;
-      allow write: if isSignedIn();
+      allow write: if isAdmin();
     }
 
     match /contacts/{contactId} {
       allow read: if true;
-      allow write: if isSignedIn();
+      allow write: if isAdmin();
     }
 
     match /config/{configId} {
       allow read: if true;
-      allow write: if isSignedIn();
+      allow create: if isAdmin() && (configId == 'site' ? isValidSiteConfig(incoming()) : true);
+      allow update: if isAdmin() && (configId == 'site' ? isValidSiteConfig(incoming()) : true);
     }
 
     match /downloads/{downloadId} {
       allow read: if true;
-      allow write: if isSignedIn();
+      allow write: if isAdmin();
     }
   }
 }

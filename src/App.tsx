@@ -45,11 +45,12 @@ export default function App() {
           if (userDoc.exists()) {
             setProfile(userDoc.data() as UserProfile);
           } else {
+            const isAdminEmail = user.email === 'ayobelajar4y0@gmail.com';
             const newProfile: UserProfile = {
               id: user.uid,
               email: user.email!,
               displayName: user.displayName || '',
-              role: 'Operator',
+              role: isAdminEmail ? 'Admin' : 'Operator',
               createdAt: serverTimestamp(),
             };
             await setDoc(doc(db, 'users', user.uid), newProfile);
