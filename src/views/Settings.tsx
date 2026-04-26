@@ -551,13 +551,34 @@ export function Settings() {
               <form onSubmit={handleSubmit} className="space-y-4">
                 {activeTab === 'articles' && (
                   <>
-                    <div>
-                      <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Judul</label>
-                      <input required type="text" value={articleForm.title} onChange={(e) => setArticleForm({...articleForm, title: e.target.value})} className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 outline-none text-sm transition-all" />
-                    </div>
-                    <div>
-                      <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Konten</label>
-                      <textarea required rows={4} value={articleForm.content} onChange={(e) => setArticleForm({...articleForm, content: e.target.value})} className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 outline-none text-sm transition-all resize-none" />
+                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-6 -mt-4">Lengkapi detail artikel yang ingin diterbitkan</p>
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Judul Artikel</label>
+                        <input required type="text" value={articleForm.title} onChange={(e) => setArticleForm({...articleForm, title: e.target.value})} placeholder="Masukkan judul menarik..." className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 outline-none text-sm transition-all font-medium" />
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Kategori</label>
+                          <select value={articleForm.category} onChange={(e) => setArticleForm({...articleForm, category: e.target.value})} className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 outline-none text-sm transition-all font-medium">
+                            <option value="Pendidikan">Pendidikan</option>
+                            <option value="Berita">Berita</option>
+                            <option value="Panduan">Panduan</option>
+                            <option value="Kreativitas">Kreativitas</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Status</label>
+                          <select value={articleForm.status} onChange={(e) => setArticleForm({...articleForm, status: e.target.value as 'Draft' | 'Published'})} className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 outline-none text-sm transition-all font-medium">
+                            <option value="Published">Published</option>
+                            <option value="Draft">Draft</option>
+                          </select>
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Konten Artikel</label>
+                        <textarea required rows={8} value={articleForm.content} onChange={(e) => setArticleForm({...articleForm, content: e.target.value})} placeholder="Tuliskan isi artikel Anda di sini..." className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 outline-none text-sm transition-all resize-none font-medium leading-relaxed" />
+                      </div>
                     </div>
                   </>
                 )}
