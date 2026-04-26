@@ -11,7 +11,11 @@ import {
   Bell,
   Settings as SettingsIcon,
   Phone,
-  Download as DownloadIcon
+  Download as DownloadIcon,
+  Facebook,
+  Instagram,
+  Twitter,
+  Youtube
 } from 'lucide-react';
 import { useAuth } from '../App';
 import { motion } from 'motion/react';
@@ -52,7 +56,7 @@ export function Layout({ children, onLogout }: LayoutProps) {
     { id: 'institutions', label: 'Artikel', icon: FileText, path: '/artikel' },
     { id: 'students', label: 'My App', icon: AppWindow, path: '/apps' },
     { id: 'teachers', label: 'Gallery', icon: Image, path: '/gallery' },
-    { id: 'contacts', label: 'Kontak', icon: Phone, path: '/kontak' },
+    { id: 'profile', label: 'Profil', icon: Phone, path: '/profil' },
     { id: 'downloads', label: 'Download', icon: DownloadIcon, path: '/downloads' },
   ];
 
@@ -148,6 +152,15 @@ export function Layout({ children, onLogout }: LayoutProps) {
                 <LogOut className="w-5 h-5 flex-shrink-0" />
                 {isSidebarOpen && <span className="text-sm font-medium">Keluar</span>}
               </button>
+              
+              {isSidebarOpen && (
+                <div className="mt-8 pt-6 border-t border-emerald-800 flex items-center justify-center gap-5 text-emerald-100/40">
+                  <a href="#" target="_blank" rel="noreferrer" className="hover:text-emerald-400 transition-colors"><Instagram className="w-4 h-4" /></a>
+                  <a href="#" target="_blank" rel="noreferrer" className="hover:text-emerald-400 transition-colors"><Facebook className="w-4 h-4" /></a>
+                  <a href="#" target="_blank" rel="noreferrer" className="hover:text-emerald-400 transition-colors"><Twitter className="w-4 h-4" /></a>
+                  <a href="#" target="_blank" rel="noreferrer" className="hover:text-emerald-400 transition-colors"><Youtube className="w-4 h-4" /></a>
+                </div>
+              )}
             </>
           )}
         </div>

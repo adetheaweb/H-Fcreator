@@ -10,7 +10,7 @@ import { Students } from './views/Students';
 import { Teachers } from './views/Teachers';
 import { Settings } from './views/Settings';
 import { Login } from './views/Login';
-import { Contacts } from './views/Contacts';
+import { Profile } from './views/Profile';
 import { Downloads } from './views/Downloads';
 import { motion, AnimatePresence } from 'motion/react';
 import { Loader2 } from 'lucide-react';
@@ -95,7 +95,7 @@ export default function App() {
               <Route path="/artikel" element={<Institutions />} />
               <Route path="/apps" element={<Students />} />
               <Route path="/gallery" element={<Teachers />} />
-              <Route path="/kontak" element={<Contacts />} />
+              <Route path="/profil" element={<Profile />} />
               <Route path="/downloads" element={<Downloads />} />
               <Route 
                 path="/admin" 
