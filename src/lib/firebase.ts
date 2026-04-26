@@ -5,7 +5,10 @@ import {
   signInWithPopup, 
   signInWithRedirect,
   getRedirectResult,
-  signOut 
+  signOut,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  sendPasswordResetEmail
 } from 'firebase/auth';
 import { getFirestore, doc, getDocFromServer } from 'firebase/firestore';
 import firebaseConfig from '../../firebase-applet-config.json';
@@ -29,15 +32,22 @@ testConnection();
 
 export const loginWithGoogle = async () => {
   try {
-    return await signInWithPopup(auth, googleProvider);
+    const result = await signInWithPopup(auth, googleProvider);
+    return result;
   } catch (error: any) {
-    console.warn("Popup blocked or failed, trying redirect...", error);
+    console.error("Login Error:", error);
     if (error.code === 'auth/popup-blocked' || error.code === 'auth/cancelled-popup-request') {
+      console.log("Popup blocked, attempting redirect...");
       return await signInWithRedirect(auth, googleProvider);
     }
     throw error;
   }
 };
+
+export const loginWithEmail = (email: string, pass: string) => signInWithEmailAndPassword(auth, email, pass);
+export const registerWithEmail = (email: string, pass: string) => createUserWithEmailAndPassword(auth, email, pass);
+export const resetPassword = (email: string) => sendPasswordResetEmail(auth, email);
+
 export const logout = () => signOut(auth);
 export { getRedirectResult };
 
