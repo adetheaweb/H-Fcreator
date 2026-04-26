@@ -102,7 +102,7 @@ export default function App() {
                 element={
                   !user ? (
                     <Login onLogin={loginWithGoogle} />
-                  ) : isAdmin ? (
+                  ) : profile?.role === 'Admin' ? (
                     <Settings />
                   ) : (
                     <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-6 bg-white rounded-3xl border border-slate-200">
