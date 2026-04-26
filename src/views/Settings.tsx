@@ -73,6 +73,8 @@ export function Settings() {
   const [galleryForm, setGalleryForm] = useState({
     title: '',
     imageUrl: '',
+    videoUrl: '',
+    mediaType: 'image' as 'image' | 'video',
     type: 'Educational' as 'Event' | 'Educational' | 'Misc'
   });
 
@@ -242,7 +244,13 @@ export function Settings() {
     } else if (activeTab === 'apps') {
       setAppForm({ name: item.name, version: item.version, platform: item.platform, url: item.url, description: item.description });
     } else if (activeTab === 'gallery') {
-      setGalleryForm({ title: item.title, imageUrl: item.imageUrl, type: item.type });
+      setGalleryForm({ 
+        title: item.title, 
+        imageUrl: item.imageUrl || '', 
+        videoUrl: item.videoUrl || '',
+        mediaType: item.mediaType || 'image',
+        type: item.type 
+      });
     } else if (activeTab === 'contacts') {
       setContactForm({ platform: item.platform, value: item.value, icon: item.icon });
     } else if (activeTab === 'downloads') {
@@ -600,10 +608,34 @@ export function Settings() {
                       <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Judul Media</label>
                       <input required type="text" value={galleryForm.title} onChange={(e) => setGalleryForm({...galleryForm, title: e.target.value})} className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 outline-none text-sm transition-all" />
                     </div>
-                    <div>
-                      <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">URL Gambar</label>
-                      <input required type="url" value={galleryForm.imageUrl} onChange={(e) => setGalleryForm({...galleryForm, imageUrl: e.target.value})} className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 outline-none text-sm transition-all" />
+                    <div className="flex gap-4 p-1 bg-slate-100 rounded-xl">
+                      <button 
+                        type="button" 
+                        onClick={() => setGalleryForm({...galleryForm, mediaType: 'image'})}
+                        className={`flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all ${galleryForm.mediaType === 'image' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-400'}`}
+                      >
+                        Gambar (URL)
+                      </button>
+                      <button 
+                        type="button" 
+                        onClick={() => setGalleryForm({...galleryForm, mediaType: 'video'})}
+                        className={`flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all ${galleryForm.mediaType === 'video' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-400'}`}
+                      >
+                        Video (ID)
+                      </button>
                     </div>
+                    {galleryForm.mediaType === 'image' ? (
+                      <div>
+                        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">URL Gambar</label>
+                        <input required type="url" placeholder="https://..." value={galleryForm.imageUrl} onChange={(e) => setGalleryForm({...galleryForm, imageUrl: e.target.value})} className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 outline-none text-sm transition-all" />
+                      </div>
+                    ) : (
+                      <div>
+                        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">YouTube Video ID</label>
+                        <input required type="text" placeholder="Contoh: H3v_A94f1r8" value={galleryForm.videoUrl} onChange={(e) => setGalleryForm({...galleryForm, videoUrl: e.target.value})} className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 outline-none text-sm transition-all" />
+                        <p className="text-[9px] text-slate-400 mt-1 uppercase font-bold tracking-widest">Masukkan ID video setelah v= di URL YouTube</p>
+                      </div>
+                    )}
                   </>
                 )}
                 {activeTab === 'contacts' && (
