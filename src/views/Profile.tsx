@@ -118,7 +118,7 @@ export function Profile() {
               Tentang Creator
             </h3>
             <p className="text-sm text-slate-500 leading-relaxed font-medium">
-              Selamat datang di portal resmi H&F_Creator. Kami berdedikasi untuk menciptakan aplikasi berkualitas, konten edukatif, dan media kreatif untuk mendukung ekosistem digital.
+              Selamat datang di portal resmi H&F Creator. Kami berdedikasi untuk menciptakan aplikasi berkualitas, konten edukatif, dan media kreatif untuk mendukung ekosistem digital.
             </p>
           </div>
         </div>

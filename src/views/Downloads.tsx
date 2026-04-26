@@ -54,7 +54,7 @@ export function Downloads() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl font-bold text-slate-900">Download Center</h2>
-          <p className="text-slate-500 text-sm">Akses berbagai file dan resources resmi H&F_Creator.</p>
+          <p className="text-slate-500 text-sm">Akses berbagai file dan resources resmi H&F Creator.</p>
         </div>
       </div>
 
@@ -105,7 +105,7 @@ export function Downloads() {
                   <div className="flex-1 mb-6">
                     <h4 className="font-extrabold text-slate-800 tracking-tight mb-2 group-hover:text-amber-600 transition-colors">{item.title}</h4>
                     <p className="text-slate-500 text-xs leading-relaxed line-clamp-3">
-                      {item.description || "Silahkan unduh file ini untuk kemudahan akses informasi H&F_Creator."}
+                      {item.description || "Silahkan unduh file ini untuk kemudahan akses informasi H&F Creator."}
                     </p>
                   </div>
 

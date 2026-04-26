@@ -22,7 +22,7 @@ export function Login({ onLogin }: LoginProps) {
           <div className="w-16 h-16 bg-emerald-900 rounded-xl flex items-center justify-center mx-auto mb-8 shadow-lg">
             <div className="text-white font-black text-2xl tracking-tighter italic">H</div>
           </div>
-          <h1 className="text-3xl font-black text-slate-800 tracking-tighter mb-3 uppercase">H&F_Creator</h1>
+          <h1 className="text-3xl font-black text-slate-800 tracking-tighter mb-3 uppercase">H&F Creator</h1>
           <p className="text-slate-400 text-xs font-bold uppercase tracking-widest leading-relaxed">
             Content, App & Gallery Hub
           </p>

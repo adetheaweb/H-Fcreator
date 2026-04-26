@@ -82,7 +82,7 @@ export function Layout({ children, onLogout }: LayoutProps) {
                 animate={{ opacity: 1 }}
                 className="text-xl font-bold text-white tracking-tight whitespace-nowrap"
               >
-                H&F_Creator
+                H&F Creator
               </motion.span>
             )}
           </div>

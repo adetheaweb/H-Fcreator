@@ -53,7 +53,7 @@ export function Students() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl font-bold text-slate-900">Katalog Aplikasi</h2>
-          <p className="text-slate-500 text-sm">Daftar sistem informasi dan aplikasi digital ekosistem H&F_Creator.</p>
+          <p className="text-slate-500 text-sm">Daftar sistem informasi dan aplikasi digital ekosistem H&F Creator.</p>
         </div>
       </div>
 
@@ -103,7 +103,7 @@ export function Students() {
                   <div className="flex-1 mb-6">
                     <h4 className="font-extrabold text-slate-800 text-lg tracking-tight group-hover:text-indigo-600 transition-colors mb-1">{app.name}</h4>
                     <p className="text-slate-500 text-xs leading-relaxed line-clamp-2">
-                      {app.description || `Sistem informasi berbasis ${app.platform} untuk mendukung operasional H&F_Creator.`}
+                      {app.description || `Sistem informasi berbasis ${app.platform} untuk mendukung operasional H&F Creator.`}
                     </p>
                   </div>
 

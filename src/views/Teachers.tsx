@@ -51,7 +51,7 @@ export function Teachers() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl font-bold text-slate-900">Gallery Media</h2>
-          <p className="text-slate-500 text-sm">Dokumentasi kegiatan, aset kreatif, dan portofolio H&F_Creator.</p>
+          <p className="text-slate-500 text-sm">Dokumentasi kegiatan, aset kreatif, dan portofolio H&F Creator.</p>
         </div>
       </div>
 
