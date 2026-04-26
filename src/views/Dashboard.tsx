@@ -11,7 +11,7 @@ import {
   Zap
 } from 'lucide-react';
 import { collection, getDocs, query, where, count } from 'firebase/firestore';
-import { db } from '../lib/firebase';
+import { db, handleFirestoreError, OperationType } from '../lib/firebase';
 import { motion } from 'motion/react';
 
 export function Dashboard() {
@@ -37,7 +37,7 @@ export function Dashboard() {
           activeStudents: artSnap.docs.filter(d => d.data().status === 'Published').length
         });
       } catch (error) {
-        console.error("Error fetching dashboard stats:", error);
+        handleFirestoreError(error, OperationType.GET, 'dashboard_stats');
       } finally {
         setLoading(false);
       }

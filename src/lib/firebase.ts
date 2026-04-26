@@ -27,7 +27,17 @@ async function testConnection() {
 }
 testConnection();
 
-export const loginWithGoogle = () => signInWithPopup(auth, googleProvider).catch(() => signInWithRedirect(auth, googleProvider));
+export const loginWithGoogle = async () => {
+  try {
+    return await signInWithPopup(auth, googleProvider);
+  } catch (error: any) {
+    console.warn("Popup blocked or failed, trying redirect...", error);
+    if (error.code === 'auth/popup-blocked' || error.code === 'auth/cancelled-popup-request') {
+      return await signInWithRedirect(auth, googleProvider);
+    }
+    throw error;
+  }
+};
 export const logout = () => signOut(auth);
 export { getRedirectResult };
 

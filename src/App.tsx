@@ -45,7 +45,7 @@ export default function App() {
           if (userDoc.exists()) {
             setProfile(userDoc.data() as UserProfile);
           } else {
-            const isAdminEmail = user.email === 'ayobelajar4y0@gmail.com';
+            const isAdminEmail = user.email?.toLowerCase() === 'ayobelajar4y0@gmail.com';
             const newProfile: UserProfile = {
               id: user.uid,
               email: user.email!,
