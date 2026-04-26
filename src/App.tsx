@@ -99,7 +99,25 @@ export default function App() {
               <Route path="/downloads" element={<Downloads />} />
               <Route 
                 path="/admin" 
-                element={user ? <Settings /> : <Login onLogin={loginWithGoogle} />} 
+                element={
+                  !user ? (
+                    <Login onLogin={loginWithGoogle} />
+                  ) : isAdmin ? (
+                    <Settings />
+                  ) : (
+                    <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-6 bg-white rounded-3xl border border-slate-200">
+                      <div className="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mb-6">
+                        <AlertCircle className="w-10 h-10 text-red-500" />
+                      </div>
+                      <h2 className="text-2xl font-black text-slate-800 uppercase tracking-tighter mb-2">Akses Ditolak</h2>
+                      <p className="text-slate-500 text-sm max-w-sm mb-8 font-medium">Maaf, halaman ini hanya dapat diakses oleh Administrator utama. Silakan hubungi pengelola sistem jika ada kendala.</p>
+                      <div className="flex gap-4">
+                        <button onClick={() => navigate('/')} className="bg-slate-100 text-slate-600 px-8 py-3 rounded-xl font-bold hover:bg-slate-200 transition-all">Kembali</button>
+                        <button onClick={logout} className="bg-red-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-red-700 transition-all">Keluar & Ganti Akun</button>
+                      </div>
+                    </div>
+                  )
+                } 
               />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
