@@ -26,7 +26,7 @@ import {
   setDoc,
   getDoc
 } from 'firebase/firestore';
-import { db } from '../lib/firebase';
+import { db, handleFirestoreError, OperationType } from '../lib/firebase';
 import { Article, App as AppType, GalleryItem, Contact, SiteConfig, Download as DownloadType } from '../types';
 import { useAuth } from '../App';
 
@@ -35,6 +35,8 @@ type TabType = 'articles' | 'apps' | 'gallery' | 'contacts' | 'admin_profile' | 
 export function Settings() {
   const [activeTab, setActiveTab] = useState<TabType>('articles');
   const [loading, setLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const { user } = useAuth();
@@ -93,6 +95,7 @@ export function Settings() {
 
   async function fetchData() {
     setLoading(true);
+    setErrorMessage(null);
     try {
       if (activeTab === 'articles') {
         const q = query(collection(db, 'articles'), orderBy('createdAt', 'desc'));
@@ -122,7 +125,8 @@ export function Settings() {
         }
       }
     } catch (err) {
-      console.error("Error fetching data:", err);
+      handleFirestoreError(err, OperationType.GET, activeTab);
+      setErrorMessage("Gagal mengambil data. Silakan coba lagi.");
     } finally {
       setLoading(false);
     }
@@ -131,6 +135,9 @@ export function Settings() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
+    setSuccessMessage(null);
+    setErrorMessage(null);
+    
     try {
       if (activeTab === 'articles') {
         if (editingId) {
@@ -147,6 +154,7 @@ export function Settings() {
           });
         }
         setArticleForm({ title: '', content: '', category: 'Pendidikan', status: 'Published' });
+        setSuccessMessage('Artikel berhasil disimpan!');
       } else if (activeTab === 'apps') {
         if (editingId) {
           await setDoc(doc(db, 'my_apps', editingId), {
@@ -161,6 +169,7 @@ export function Settings() {
           });
         }
         setAppForm({ name: '', version: '1.0.0', platform: 'Web', url: '', description: '' });
+        setSuccessMessage('Aplikasi berhasil disimpan!');
       } else if (activeTab === 'gallery') {
         if (editingId) {
           await setDoc(doc(db, 'gallery', editingId), {
@@ -173,6 +182,7 @@ export function Settings() {
           });
         }
         setGalleryForm({ title: '', imageUrl: '', type: 'Educational' });
+        setSuccessMessage('Media berhasil disimpan!');
       } else if (activeTab === 'contacts') {
         if (editingId) {
           await setDoc(doc(db, 'contacts', editingId), {
@@ -185,6 +195,7 @@ export function Settings() {
           });
         }
         setContactForm({ platform: '', value: '', icon: 'Phone' });
+        setSuccessMessage('Kontak berhasil disimpan!');
       } else if (activeTab === 'downloads') {
         if (editingId) {
           await setDoc(doc(db, 'downloads', editingId), {
@@ -197,18 +208,27 @@ export function Settings() {
           });
         }
         setDownloadForm({ title: '', description: '', fileUrl: '', fileSize: '', type: 'PDF' });
+        setSuccessMessage('Download berhasil disimpan!');
       } else if (activeTab === 'admin_profile') {
-        await setDoc(doc(db, 'config', 'site'), {
-          ...siteConfig,
-          updatedAt: serverTimestamp()
-        });
-        alert('Profil admin berhasil diperbarui!');
+        const path = 'config/site';
+        try {
+          await setDoc(doc(db, 'config', 'site'), {
+            ...siteConfig,
+            updatedAt: serverTimestamp()
+          });
+          setSuccessMessage('Profil admin berhasil diperbarui!');
+          // Clear success message after 3 seconds
+          setTimeout(() => setSuccessMessage(null), 3000);
+        } catch (err) {
+          handleFirestoreError(err, OperationType.WRITE, path);
+        }
       }
       setShowModal(false);
       setEditingId(null);
       fetchData();
     } catch (err) {
       console.error("Error saving data:", err);
+      setErrorMessage("Gagal menyimpan data. Pastikan Anda memiliki izin yang cukup.");
     } finally {
       setLoading(false);
     }
@@ -287,7 +307,31 @@ export function Settings() {
       </div>
 
       {/* Content Area */}
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm min-h-[500px]">
+      <div className="bg-white rounded-xl border border-slate-200 shadow-sm min-h-[500px] relative">
+        <AnimatePresence>
+          {successMessage && (
+            <motion.div 
+              initial={{ opacity: 0, y: -20 }} 
+              animate={{ opacity: 1, y: 0 }} 
+              exit={{ opacity: 0, y: -20 }}
+              className="absolute top-4 right-4 z-20 bg-emerald-100 text-emerald-700 px-4 py-2 rounded-lg border border-emerald-200 text-xs font-bold shadow-lg flex items-center gap-2"
+            >
+              <CheckCircle2 className="w-4 h-4" />
+              {successMessage}
+            </motion.div>
+          )}
+          {errorMessage && (
+            <motion.div 
+              initial={{ opacity: 0, y: -20 }} 
+              animate={{ opacity: 1, y: 0 }} 
+              exit={{ opacity: 0, y: -20 }}
+              className="absolute top-4 right-4 z-20 bg-red-100 text-red-700 px-4 py-2 rounded-lg border border-red-200 text-xs font-bold shadow-lg flex items-center gap-2"
+            >
+              <AlertCircle className="w-4 h-4" />
+              {errorMessage}
+            </motion.div>
+          )}
+        </AnimatePresence>
         {activeTab === 'admin_profile' ? (
           <div className="p-8">
             <h3 className="text-xl font-bold mb-8 text-slate-800">Konfigurasi Profil Admin</h3>
