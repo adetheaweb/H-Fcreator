@@ -69,3 +69,14 @@ export interface Download {
   type: string;
   createdAt: any;
 }
+
+export interface Slider {
+  id: string;
+  title?: string;
+  subtitle?: string;
+  imageUrl: string;
+  link?: string;
+  order: number;
+  active: boolean;
+  createdAt: any;
+}

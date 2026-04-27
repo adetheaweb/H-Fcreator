@@ -11,7 +11,8 @@ import {
   AlertCircle,
   Phone,
   Download,
-  Loader2
+  Loader2,
+  Layers
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
@@ -27,13 +28,13 @@ import {
   getDoc
 } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '../lib/firebase';
-import { Article, App as AppType, GalleryItem, Contact, SiteConfig, Download as DownloadType } from '../types';
+import { Article, App as AppType, GalleryItem, Contact, SiteConfig, Download as DownloadType, Slider } from '../types';
 import { useAuth } from '../App';
 
-type TabType = 'articles' | 'apps' | 'gallery' | 'contacts' | 'admin_profile' | 'downloads';
+type TabType = 'sliders' | 'articles' | 'apps' | 'gallery' | 'contacts' | 'admin_profile' | 'downloads';
 
 export function Settings() {
-  const [activeTab, setActiveTab] = useState<TabType>('articles');
+  const [activeTab, setActiveTab] = useState<TabType>('sliders');
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -47,6 +48,7 @@ export function Settings() {
   const [gallery, setGallery] = useState<GalleryItem[]>([]);
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [downloads, setDownloads] = useState<DownloadType[]>([]);
+  const [sliders, setSliders] = useState<Slider[]>([]);
   const [siteConfig, setSiteConfig] = useState<SiteConfig>({
     adminPhotoUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&h=200&auto=format&fit=crop',
     adminName: 'H&F Manager',
@@ -94,6 +96,36 @@ export function Settings() {
     type: 'PDF'
   });
 
+  const [sliderForm, setSliderForm] = useState({
+    title: '',
+    subtitle: '',
+    imageUrl: '',
+    link: '',
+    order: 0,
+    active: true
+  });
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, type: 'gallery' | 'slider') => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 800000) {
+      setErrorMessage("Ukuran file terlalu besar! Gunakan gambar di bawah 800KB agar bisa disimpan.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const base64 = reader.result as string;
+      if (type === 'gallery') {
+        setGalleryForm(prev => ({ ...prev, imageUrl: base64 }));
+      } else if (type === 'slider') {
+        setSliderForm(prev => ({ ...prev, imageUrl: base64 }));
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
   useEffect(() => {
     fetchData();
   }, [activeTab]);
@@ -122,6 +154,10 @@ export function Settings() {
         const q = query(collection(db, 'downloads'), orderBy('createdAt', 'desc'));
         const snap = await getDocs(q);
         setDownloads(snap.docs.map(d => ({ id: d.id, ...d.data() } as DownloadType)));
+      } else if (activeTab === 'sliders') {
+        const q = query(collection(db, 'sliders'), orderBy('order', 'asc'));
+        const snap = await getDocs(q);
+        setSliders(snap.docs.map(d => ({ id: d.id, ...d.data() } as Slider)));
       } else if (activeTab === 'admin_profile') {
         const docRef = doc(db, 'config', 'site');
         const docSnap = await getDoc(docRef);
@@ -215,25 +251,32 @@ export function Settings() {
         }
         setDownloadForm({ title: '', description: '', fileUrl: '', fileSize: '', type: 'PDF' });
         setSuccessMessage('Download berhasil disimpan!');
-      } else if (activeTab === 'admin_profile') {
-        const path = 'config/site';
-        try {
-          await setDoc(doc(db, 'config', 'site'), {
-            ...siteConfig,
-            updatedAt: serverTimestamp()
+      } else if (activeTab === 'sliders') {
+        if (editingId) {
+          await setDoc(doc(db, 'sliders', editingId), {
+            ...sliderForm
+          }, { merge: true });
+        } else {
+          await addDoc(collection(db, 'sliders'), {
+            ...sliderForm,
+            createdAt: serverTimestamp()
           });
-          setSuccessMessage('Profil admin berhasil diperbarui!');
-          // Clear success message after 3 seconds
-          setTimeout(() => setSuccessMessage(null), 3000);
-        } catch (err) {
-          handleFirestoreError(err, OperationType.WRITE, path);
         }
+        setSliderForm({ title: '', subtitle: '', imageUrl: '', link: '', order: 0, active: true });
+        setSuccessMessage('Slider berhasil disimpan!');
+      } else if (activeTab === 'admin_profile') {
+        await setDoc(doc(db, 'config', 'site'), {
+          ...siteConfig,
+          updatedAt: serverTimestamp()
+        });
+        setSuccessMessage('Profil admin berhasil diperbarui!');
+        setTimeout(() => setSuccessMessage(null), 3000);
       }
       setShowModal(false);
       setEditingId(null);
       fetchData();
     } catch (err) {
-      console.error("Error saving data:", err);
+      handleFirestoreError(err, OperationType.WRITE, activeTab);
       setErrorMessage("Gagal menyimpan data. Pastikan Anda memiliki izin yang cukup.");
     } finally {
       setLoading(false);
@@ -258,6 +301,8 @@ export function Settings() {
       setContactForm({ platform: item.platform, value: item.value, icon: item.icon });
     } else if (activeTab === 'downloads') {
       setDownloadForm({ title: item.title, description: item.description, fileUrl: item.fileUrl, fileSize: item.fileSize, type: item.type });
+    } else if (activeTab === 'sliders') {
+      setSliderForm({ title: item.title || '', subtitle: item.subtitle || '', imageUrl: item.imageUrl, link: item.link || '', order: item.order || 0, active: item.active !== undefined ? item.active : true });
     }
     setShowModal(true);
   }
@@ -288,14 +333,15 @@ export function Settings() {
             className="flex items-center justify-center gap-2 bg-indigo-600 text-white px-5 py-2.5 rounded-xl font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-600/20"
           >
             <Plus className="w-4 h-4" />
-            Tambah {activeTab === 'articles' ? 'Artikel' : activeTab === 'apps' ? 'Aplikasi' : 'Media'}
+            Tambah {activeTab === 'articles' ? 'Artikel' : activeTab === 'apps' ? 'Aplikasi' : activeTab === 'gallery' ? 'Media' : activeTab === 'sliders' ? 'Slider' : activeTab === 'contacts' ? 'Kontak' : 'Download'}
           </button>
         )}
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-2 p-1 bg-slate-200/50 rounded-2xl w-fit">
+      <div className="flex flex-wrap gap-2 p-1 bg-slate-200/50 rounded-2xl w-fit">
         {[
+          { id: 'sliders', label: 'Sliders', icon: Layers },
           { id: 'articles', label: 'Artikel', icon: FileText },
           { id: 'apps', label: 'My App', icon: AppWindow },
           { id: 'gallery', label: 'Gallery', icon: ImageIcon },
@@ -476,6 +522,31 @@ export function Settings() {
               <tbody className="text-sm">
                 {loading ? (
                   <tr><td colSpan={3} className="px-6 py-12 text-center text-slate-400 font-bold uppercase tracking-widest text-[10px]">Sinkronisasi...</td></tr>
+                ) : activeTab === 'sliders' ? (
+                  sliders.length === 0 ? (
+                    <tr><td colSpan={3} className="px-6 py-12 text-center text-slate-400 font-bold uppercase tracking-widest text-[10px]">Data Kosong</td></tr>
+                  ) : sliders.map(s => (
+                    <tr key={s.id} className="hover:bg-slate-50 border-b border-slate-50 group">
+                      <td className="px-6 py-4 flex items-center gap-3">
+                        <img src={s.imageUrl} className="w-16 h-10 object-cover rounded-lg bg-slate-100" alt="" />
+                        <div>
+                          <div className="font-bold text-slate-800">{s.title || 'Untitled Slider'}</div>
+                          <div className="text-[10px] text-slate-400 font-medium uppercase tracking-wider">Order: {s.order}</div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-widest ${s.active ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>
+                          {s.active ? 'Active' : 'Inactive'}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <div className="flex justify-end gap-2">
+                          <button onClick={() => handleEdit(s)} className="p-1.5 text-slate-400 hover:text-indigo-600 transition-colors bg-slate-50 rounded-lg border border-slate-100 hover:border-indigo-100"><Edit2 className="w-3.5 h-3.5" /></button>
+                          <button onClick={() => handleDelete(s.id, 'sliders')} className="p-1.5 text-slate-400 hover:text-red-500 transition-colors bg-slate-50 rounded-lg border border-slate-100 hover:border-red-100"><Trash2 className="w-3.5 h-3.5" /></button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
                 ) : activeTab === 'articles' ? (
                   articles.length === 0 ? (
                     <tr><td colSpan={3} className="px-6 py-12 text-center text-slate-400 font-bold uppercase tracking-widest text-[10px]">Data Kosong</td></tr>
@@ -593,8 +664,63 @@ export function Settings() {
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowModal(false)} className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" />
             <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }} className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl p-8 overflow-y-auto max-h-[90vh]">
-              <h3 className="text-xl font-bold mb-6">{editingId ? 'Edit' : 'Tambah'} {activeTab === 'articles' ? 'Artikel' : activeTab === 'apps' ? 'Aplikasi' : activeTab === 'gallery' ? 'Media' : activeTab === 'contacts' ? 'Kontak' : 'Download'}</h3>
+              <h3 className="text-xl font-bold mb-6">{editingId ? 'Edit' : 'Tambah'} {activeTab === 'articles' ? 'Artikel' : activeTab === 'apps' ? 'Aplikasi' : activeTab === 'gallery' ? 'Media' : activeTab === 'sliders' ? 'Slider' : activeTab === 'contacts' ? 'Kontak' : 'Download'}</h3>
               <form onSubmit={handleSubmit} className="space-y-4">
+                {activeTab === 'sliders' && (
+                  <>
+                    <div>
+                      <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Gambar Slider</label>
+                      <div className="space-y-3">
+                        {sliderForm.imageUrl && (
+                          <img src={sliderForm.imageUrl} className="w-full h-32 object-cover rounded-xl border border-slate-200" alt="Preview" />
+                        )}
+                        <div className="flex gap-2">
+                          <div className="relative flex-1">
+                            <input 
+                              type="file" 
+                              accept="image/*"
+                              onChange={(e) => handleFileUpload(e, 'slider')}
+                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                            />
+                            <div className="w-full px-4 py-2.5 bg-indigo-50 text-indigo-600 border border-indigo-100 rounded-xl flex items-center justify-center gap-2 text-xs font-bold hover:bg-indigo-100 transition-all">
+                              <ImageIcon className="w-4 h-4" />
+                              Pilih File Gambar
+                            </div>
+                          </div>
+                          <div className="flex-[2]">
+                            <input type="url" value={sliderForm.imageUrl} onChange={(e) => setSliderForm({...sliderForm, imageUrl: e.target.value})} placeholder="Atau tempel URL gambar..." className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 outline-none text-sm transition-all" />
+                          </div>
+                        </div>
+                        <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest">Disarankan: Ukuran File &lt; 800KB</p>
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Judul (Optional)</label>
+                      <input type="text" value={sliderForm.title} onChange={(e) => setSliderForm({...sliderForm, title: e.target.value})} className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 outline-none text-sm transition-all" />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Sub-judul (Optional)</label>
+                      <input type="text" value={sliderForm.subtitle} onChange={(e) => setSliderForm({...sliderForm, subtitle: e.target.value})} className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 outline-none text-sm transition-all" />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Urutan (Order)</label>
+                        <input type="number" value={sliderForm.order} onChange={(e) => setSliderForm({...sliderForm, order: parseInt(e.target.value)})} className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 outline-none text-sm transition-all" />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Status</label>
+                        <select value={sliderForm.active ? 'true' : 'false'} onChange={(e) => setSliderForm({...sliderForm, active: e.target.value === 'true'})} className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 outline-none text-sm transition-all">
+                          <option value="true">Aktif</option>
+                          <option value="false">Tidak Aktif</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Link Tujuan (Optional)</label>
+                      <input type="url" value={sliderForm.link} onChange={(e) => setSliderForm({...sliderForm, link: e.target.value})} placeholder="https://..." className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 outline-none text-sm transition-all" />
+                    </div>
+                  </>
+                )}
                 {activeTab === 'articles' && (
                   <>
                     <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-6 -mt-4">Lengkapi detail artikel yang ingin diterbitkan</p>
@@ -664,8 +790,29 @@ export function Settings() {
                     </div>
                     {galleryForm.mediaType === 'image' ? (
                       <div>
-                        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">URL Gambar</label>
-                        <input required type="url" placeholder="https://..." value={galleryForm.imageUrl} onChange={(e) => setGalleryForm({...galleryForm, imageUrl: e.target.value})} className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 outline-none text-sm transition-all" />
+                        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Gambar Galeri</label>
+                        <div className="space-y-3">
+                          {galleryForm.imageUrl && (
+                            <img src={galleryForm.imageUrl} className="w-full h-32 object-cover rounded-xl border border-slate-200" alt="Preview" />
+                          )}
+                          <div className="flex gap-2">
+                            <div className="relative flex-1">
+                              <input 
+                                type="file" 
+                                accept="image/*"
+                                onChange={(e) => handleFileUpload(e, 'gallery')}
+                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                              />
+                              <div className="w-full px-4 py-2.5 bg-indigo-50 text-indigo-600 border border-indigo-100 rounded-xl flex items-center justify-center gap-2 text-xs font-bold hover:bg-indigo-100 transition-all">
+                                <ImageIcon className="w-4 h-4" />
+                                Pilih Gambar
+                              </div>
+                            </div>
+                            <div className="flex-[2]">
+                              <input type="url" placeholder="Atau tempel URL..." value={galleryForm.imageUrl} onChange={(e) => setGalleryForm({...galleryForm, imageUrl: e.target.value})} className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 outline-none text-sm transition-all" />
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     ) : (
                       <div>

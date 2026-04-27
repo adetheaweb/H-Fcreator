@@ -90,6 +90,22 @@
       },
       "required": ["title", "fileUrl"]
     },
+    "Slider": {
+      "title": "Slider",
+      "description": "Header slider images/content",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "subtitle": { "type": "string" },
+        "imageUrl": { "type": "string" },
+        "link": { "type": "string" },
+        "order": { "type": "number" },
+        "active": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["imageUrl"]
+    },
     "SiteConfig": {
       "title": "Site Configuration",
       "description": "Global site settings like admin profile data",
@@ -130,6 +146,10 @@
     "/downloads/{downloadId}": {
       "schema": "Download",
       "description": "Downloadable files"
+    },
+    "/sliders/{sliderId}": {
+      "schema": "Slider",
+      "description": "Header sliders"
     }
   }
 }

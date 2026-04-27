@@ -13,6 +13,7 @@ import {
 import { collection, getDocs, query, where, count } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '../lib/firebase';
 import { motion } from 'motion/react';
+import { HeaderSlider } from '../components/HeaderSlider';
 
 export function Dashboard() {
   const [stats, setStats] = useState({
@@ -54,6 +55,9 @@ export function Dashboard() {
 
   return (
     <div className="space-y-8 p-4">
+      {/* Header Slider */}
+      <HeaderSlider />
+
       {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {cards.map((card, i) => (

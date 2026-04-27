@@ -2,7 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { onAuthStateChanged, User, getRedirectResult } from 'firebase/auth';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { auth, db, loginWithGoogle, logout } from './lib/firebase';
-import { UserProfile } from './types';
+import { UserProfile, SiteConfig } from './types';
 import { Layout } from './components/Layout';
 import { Dashboard } from './views/Dashboard';
 import { Institutions } from './views/Institutions';
@@ -13,8 +13,8 @@ import { Login } from './views/Login';
 import { Profile } from './views/Profile';
 import { Downloads } from './views/Downloads';
 import { motion, AnimatePresence } from 'motion/react';
-import { Loader2 } from 'lucide-react';
-import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { Loader2, AlertCircle } from 'lucide-react';
+import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 
 interface AuthContextType {
   user: User | null;
@@ -33,6 +33,7 @@ export default function App() {
   const [siteConfig, setSiteConfig] = useState<SiteConfig | null>(null);
   const [loading, setLoading] = useState(true);
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Fetch site config for theme colors early

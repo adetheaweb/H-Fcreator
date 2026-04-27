@@ -57,8 +57,17 @@ service cloud.firestore {
       return data.keys().hasAll(['adminName', 'adminStatus', 'adminPhotoUrl', 'updatedAt']) &&
              data.adminName is string && data.adminName.size() <= 100 &&
              data.adminStatus is string && data.adminStatus.size() <= 100 &&
-             data.adminPhotoUrl is string && data.adminPhotoUrl.size() <= 1000 &&
+             data.adminPhotoUrl is string && data.adminPhotoUrl.size() <= 1000000 &&
+             (data.keys().contains('primaryColor') ? data.primaryColor is string : true) &&
+             (data.keys().contains('accentColor') ? data.accentColor is string : true) &&
              data.updatedAt == request.time;
+    }
+
+    function isValidSlider(data) {
+      return data.keys().hasAll(['imageUrl', 'order', 'active']) &&
+             data.imageUrl is string && data.imageUrl.size() <= 1000000 &&
+             data.order is int &&
+             data.active is bool;
     }
 
     // --- Rules ---
@@ -107,6 +116,12 @@ service cloud.firestore {
     match /downloads/{downloadId} {
       allow read: if true;
       allow write: if isAdmin();
+    }
+
+    match /sliders/{sliderId} {
+      allow read: if true;
+      allow create, update: if isAdmin() && isValidSlider(incoming());
+      allow delete: if isAdmin();
     }
   }
 }
